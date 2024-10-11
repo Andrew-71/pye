@@ -24,6 +24,7 @@ func NewUser(email, password string) (User, error) {
 	return User{uuid.New(), email, hash}, nil
 }
 
-func CreateUser(User) {
-
+// TODO: Implement
+func ByEmail(email string) (User, bool) {
+	return UserByEmail(email)
 }
