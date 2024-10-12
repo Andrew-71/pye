@@ -23,8 +23,3 @@ func NewUser(email, password string) (User, error) {
 	}
 	return User{uuid.New(), email, hash}, nil
 }
-
-// TODO: Implement
-func ByEmail(email string) (User, bool) {
-	return UserByEmail(email)
-}

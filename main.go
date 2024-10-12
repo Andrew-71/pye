@@ -15,7 +15,9 @@ func main() {
 	router.HandleFunc("POST /register", Register)
 	router.HandleFunc("POST /login", Login)
 
-	router.HandleFunc("GET /login", Login) // TODO: temp
+	// Note: likely temporary, possibly to be replaced by a fake "frontend"
+	router.HandleFunc("GET /login", Login) 
+	router.HandleFunc("GET /register", Register)
 
 	http.ListenAndServe(":7102", router)
 }

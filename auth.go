@@ -7,38 +7,41 @@ import (
 	"strings"
 )
 
-func ValidEmail(email string) bool {
+func validEmail(email string) bool {
 	_, err := mail.ParseAddress(email)
 	return err == nil
 }
-func ValidPass(pass string) bool {
+func validPass(pass string) bool {
 	// TODO: Obviously, we *might* want something more sophisticated here
 	return len(pass) >= 8
 }
-func EmailTaken(email string) bool {
-	// FIXME: Implement properly
-	return EmailExists(email)
-}
+
 func Register(w http.ResponseWriter, r *http.Request) {
 	email, password, ok := r.BasicAuth()
 
 	if ok {
 		email = strings.TrimSpace(email)
 		password = strings.TrimSpace(password)
-		if !(ValidEmail(email) && ValidPass(password) && !EmailTaken(email)) {
-			slog.Info("Outcome",
-				"email", ValidEmail(email),
-				"pass", ValidPass(password),
-				"taken", !EmailTaken(email))
+		if !(validEmail(email) && validPass(password) && !emailExists(email)) {
+			slog.Debug("Outcome",
+				"email", validEmail(email),
+				"pass", validPass(password),
+				"taken", !emailExists(email))
 			http.Error(w, "invalid auth credentials", http.StatusBadRequest)
 			return
 		}
 		user, err := NewUser(email, password)
 		if err != nil {
 			slog.Error("error creating a new user", "error", err)
+			http.Error(w, "error creating a new user", http.StatusInternalServerError)
+			return
 		}
-		slog.Info("user", "user", user)
-		AddUser(user)
+		err = addUser(user)
+		if err != nil {
+			slog.Error("error saving a new user", "error", err)
+			http.Error(w, "error saving a new user", http.StatusInternalServerError)
+			return
+		}
 		w.WriteHeader(http.StatusCreated)
 		w.Write([]byte("User created"))
 		return
@@ -55,7 +58,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	if ok {
 		email = strings.TrimSpace(email)
 		password = strings.TrimSpace(password)
-		user, ok := ByEmail(email)
+		user, ok := byEmail(email)
 		if !ok || !user.PasswordFits(password) {
 			http.Error(w, "you did something wrong", http.StatusUnauthorized)
 			return
