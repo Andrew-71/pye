@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	fmt.Println("=== PYE ===")
+	fmt.Println("=== Working on port 7102 ===")
 
 	router := http.NewServeMux()
 
