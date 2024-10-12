@@ -10,6 +10,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -18,7 +19,6 @@ var KeyFile = "key"
 
 var (
 	key *ecdsa.PrivateKey
-	// t   *jwt.Token
 )
 
 // LoadKey attempts to load a private key from KeyFile.
@@ -76,8 +76,10 @@ func CreateJWT(usr User) (string, error) {
 	t := jwt.NewWithClaims(jwt.SigningMethodES256,
 		jwt.MapClaims{
 			"iss": "pye",
-			"sub": "john",
-			"foo": 2,
+			"uid": usr.Uuid,
+			"sub": usr.Email,
+			"iat": time.Now(),
+			"exp": time.Now().Add(time.Hour * 24 * 7),
 		})
 	s, err := t.SignedString(key)
 	if err != nil {
