@@ -11,17 +11,18 @@ import (
 	"os"
 	"time"
 
+    "git.a71.su/Andrew71/pye/storage"
 	"github.com/golang-jwt/jwt/v5"
 )
 
 var (
-    KeyFile = "private.key"
-	key *rsa.PrivateKey
+	KeyFile = "private.key"
+	key     *rsa.PrivateKey
 )
 
 // LoadKey attempts to load a private key from KeyFile.
 // If the file does not exist, it generates a new key (and saves it)
-func LoadKey() {
+func MustLoadKey() {
 	// If the key doesn't exist, create it
 	if _, err := os.Stat(KeyFile); errors.Is(err, os.ErrNotExist) {
 		key, err = rsa.GenerateKey(rand.Reader, 4096)
@@ -59,6 +60,10 @@ func LoadKey() {
 	}
 }
 
+func init() {
+	MustLoadKey()
+}
+
 // publicKey returns our public key as PEM block
 func publicKey(w http.ResponseWriter, r *http.Request) {
 	key_marshalled := x509.MarshalPKCS1PublicKey(&key.PublicKey)
@@ -66,7 +71,7 @@ func publicKey(w http.ResponseWriter, r *http.Request) {
 	pem.Encode(w, &block)
 }
 
-func CreateJWT(usr User) (string, error) {
+func CreateJWT(usr storage.User) (string, error) {
 	t := jwt.NewWithClaims(jwt.SigningMethodRS256,
 		jwt.MapClaims{
 			"iss": "pye",
@@ -98,8 +103,4 @@ func VerifyJWT(token string, publicKey []byte) bool {
 	})
 	slog.Info("Error check", "err", err)
 	return err == nil
-}
-
-func init() {
-	LoadKey()
 }

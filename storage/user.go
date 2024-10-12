@@ -1,6 +1,8 @@
-package main
+package storage
 
 import (
+	"log/slog"
+
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -19,6 +21,7 @@ func (u User) PasswordFits(password string) bool {
 func NewUser(email, password string) (User, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if err != nil {
+		slog.Error("error creating a new user", "error", err)
 		return User{}, err
 	}
 	return User{uuid.New(), email, hash}, nil

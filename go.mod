@@ -1,4 +1,4 @@
-module pye-auth
+module git.a71.su/Andrew71/pye
 
 go 1.22
 
