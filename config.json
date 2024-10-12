@@ -1,0 +1,5 @@
+{
+    "port": 7102,
+    "key-file": "private.key",
+    "sqlite-file": "data.db"
+}

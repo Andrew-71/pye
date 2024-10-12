@@ -1,5 +1,11 @@
 package config
 
+import (
+	"encoding/json"
+	"log/slog"
+	"os"
+)
+
 type Config struct {
 	Port       int    `json:"port"`
 	KeyFile    string `json:"key-file"`
@@ -7,14 +13,39 @@ type Config struct {
 }
 
 var DefaultConfig = Config{
-	Port: 7102,
-	KeyFile: "private.key",
+	Port:       7102,
+	KeyFile:    "private.key",
 	SQLiteFile: "data.db",
 }
 
-var Cfg = MustLoadConfig()
+var (
+	DefaultLocation = "config.json"
+	Cfg             Config
+)
 
-// TODO: Implement
-func MustLoadConfig() Config {
-	return DefaultConfig
+func LoadConfig(filename string) error {
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+	temp_config := DefaultConfig
+	err = json.Unmarshal(data, &temp_config)
+	if err != nil {
+		return err
+	}
+	Cfg = temp_config
+	slog.Info("Loaded config", "file", filename)
+	return nil
+}
+
+func MustLoadConfig() {
+	err := LoadConfig(DefaultLocation)
+	if err != nil {
+		slog.Error("error initially loading config", "error", err)
+		os.Exit(1)
+	}
+}
+
+func init() {
+	MustLoadConfig()
 }

@@ -3,6 +3,7 @@ package cmd
 import (
 	"flag"
 	"fmt"
+	"log/slog"
 	"os"
 
 	"git.a71.su/Andrew71/pye/cmd/serve"
@@ -10,14 +11,10 @@ import (
 	"git.a71.su/Andrew71/pye/config"
 )
 
-func Run() {
-	// configFlag := flag.String("config", "", "override config file")
-	// flag.Parse()
-	// if *configFlag != "" {
-		// config.Load()
-	// }
+func Run() {	
 
 	serveCmd := flag.NewFlagSet("serve", flag.ExitOnError)
+	serveConfig := serveCmd.String("config", "", "override config file")
 	servePort := serveCmd.Int("port", 0, "override port")
 	serveDb := serveCmd.String("db", "", "override sqlite database")
 
@@ -31,6 +28,12 @@ func Run() {
 	switch os.Args[1] {
 	case "serve":
 		serveCmd.Parse(os.Args[2:])
+		if *serveConfig != "" {
+			err := config.LoadConfig(*serveConfig)
+			if err != nil {
+				slog.Error("error loading custom config", "error", err)
+			}
+		}
 		if *servePort != 0 {
 			config.Cfg.Port = *servePort
 		}
