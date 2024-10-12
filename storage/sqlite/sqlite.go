@@ -58,10 +58,9 @@ func (s SQLiteStorage) EmailExists(email string) bool {
 }
 
 func MustLoadSQLite(dataFile string) SQLiteStorage {
-	// I *think* we need some file, even if only empty
 	if _, err := os.Stat(dataFile); errors.Is(err, os.ErrNotExist) {
-		slog.Error("sqlite3 database file required", "file", dataFile)
-		os.Exit(1)
+		os.Create(dataFile)
+		slog.Info("created sqlite3 database file", "file", dataFile)
 	}
 	db, err := sql.Open("sqlite3", dataFile)
 	if err != nil {
@@ -69,11 +68,16 @@ func MustLoadSQLite(dataFile string) SQLiteStorage {
 		os.Exit(1)
 	}
 
-	// TODO: Apparently "prepare" works here
-	if _, err := db.Exec(create); err != nil && err.Error() != "table \"users\" already exists" {
-		slog.Info("error initialising database table", "error", err)
-		os.Exit(1)
+	statement, err := db.Prepare(create)
+	if err != nil {
+		if err.Error() != "table \"users\" already exists" {
+			slog.Info("error initialising database table", "error", err)
+			os.Exit(1)
+		}
+	} else {
+		statement.Exec()
 	}
+
 	slog.Info("loaded database", "file", dataFile)
 	return SQLiteStorage{db}
 }
