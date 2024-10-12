@@ -1,10 +1,12 @@
-package main
+package auth
 
 import (
 	"log/slog"
 	"net/http"
 	"net/mail"
 	"strings"
+
+	"git.a71.su/Andrew71/pye/storage"
 )
 
 func validEmail(email string) bool {
@@ -16,7 +18,7 @@ func validPass(pass string) bool {
 	return len(pass) >= 8
 }
 
-func Register(w http.ResponseWriter, r *http.Request) {
+func Register(w http.ResponseWriter, r *http.Request, data storage.Storage) {
 	email, password, ok := r.BasicAuth()
 
 	if ok {
@@ -46,7 +48,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "This API requires authorization", http.StatusUnauthorized)
 }
 
-func Login(w http.ResponseWriter, r *http.Request) {
+func Login(w http.ResponseWriter, r *http.Request, data storage.Storage) {
 	email, password, ok := r.BasicAuth()
 
 	if ok {

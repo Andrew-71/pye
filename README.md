@@ -11,10 +11,14 @@ in a state that proves I am competent Go developer.
 
 ## Current functionality
 
-* Port `7102`
+## `serve`
+
 * `POST /register` - register a user with Basic Auth
 * `POST /login` - get a JWT token by Basic Auth
 * `GET /pem` - get PEM-encoded public RS256 key
-* Data persistently stored in an SQLite database `data.db`
-(requires creation of empty db)
-* RS256 key loaded from `private.key` file or generated on startup if missing
+* Data persistently stored in an SQLite database
+* RS256 key loaded from a file or generated on startup if missing
+
+## `verify`
+
+* Verify JWT via public key in a PEM file

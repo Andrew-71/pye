@@ -18,10 +18,6 @@ const create string = `
 	PRIMARY KEY("uuid")
   );`
 
-var (
-	DataFile = "data.db"
-)
-
 type SQLiteStorage struct {
 	db *sql.DB
 }
@@ -61,13 +57,13 @@ func (s SQLiteStorage) EmailExists(email string) bool {
 	return ok
 }
 
-func MustLoadSQLite() SQLiteStorage {
+func MustLoadSQLite(dataFile string) SQLiteStorage {
 	// I *think* we need some file, even if only empty
-	if _, err := os.Stat(DataFile); errors.Is(err, os.ErrNotExist) {
-		slog.Error("sqlite3 database file required", "file", DataFile)
+	if _, err := os.Stat(dataFile); errors.Is(err, os.ErrNotExist) {
+		slog.Error("sqlite3 database file required", "file", dataFile)
 		os.Exit(1)
 	}
-	db, err := sql.Open("sqlite3", DataFile)
+	db, err := sql.Open("sqlite3", dataFile)
 	if err != nil {
 		slog.Error("error opening database", "error", err)
 		os.Exit(1)
@@ -78,6 +74,6 @@ func MustLoadSQLite() SQLiteStorage {
 		slog.Info("error initialising database table", "error", err)
 		os.Exit(1)
 	}
-	slog.Info("loaded database")
+	slog.Info("loaded database", "file", dataFile)
 	return SQLiteStorage{db}
 }
