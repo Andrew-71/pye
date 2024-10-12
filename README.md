@@ -1,4 +1,4 @@
-# PYE Auth
+# Auth microservice
 
 **Mission**: Science compels us to create a microservice!
 
@@ -14,9 +14,9 @@ obviously I'd use **SQL** for production
 
 ## Current functionality
 
-* Port 7102
+* Port `7102`
 * `POST /register` - register a user with Basic Auth
 * `POST /login` - get a JWT token by Basic Auth
-* `GET /public-key` - get PEM-encoded public HS256 key
+* `GET /pem` - get PEM-encoded public RS256 key
 * Data persistently stored in... `data.json`, for convenience
-* HS256 key loaded from `key` file or generated on startup if missing
+* RS256 key loaded from `private.key` file or generated on startup if missing

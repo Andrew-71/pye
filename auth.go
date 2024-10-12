@@ -13,11 +13,10 @@ func ValidEmail(email string) bool {
 }
 func ValidPass(pass string) bool {
 	// TODO: Obviously, we *might* want something more sophisticated here
-	return true
-	//return len(pass) >= 8
+	return len(pass) >= 8
 }
 func EmailTaken(email string) bool {
-	// TODO: Implement properly
+	// FIXME: Implement properly
 	return EmailExists(email)
 }
 func Register(w http.ResponseWriter, r *http.Request) {
@@ -27,12 +26,11 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		email = strings.TrimSpace(email)
 		password = strings.TrimSpace(password)
 		if !(ValidEmail(email) && ValidPass(password) && !EmailTaken(email)) {
-			// TODO: Provide descriptive error and check if 400 is best code?
 			slog.Info("Outcome",
 				"email", ValidEmail(email),
 				"pass", ValidPass(password),
 				"taken", !EmailTaken(email))
-			http.Error(w, "Invalid auth credentials", http.StatusBadRequest)
+			http.Error(w, "invalid auth credentials", http.StatusBadRequest)
 			return
 		}
 		user, err := NewUser(email, password)
@@ -59,7 +57,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		password = strings.TrimSpace(password)
 		user, ok := ByEmail(email)
 		if !ok || !user.PasswordFits(password) {
-			http.Error(w, "You did something wrong", http.StatusUnauthorized)
+			http.Error(w, "you did something wrong", http.StatusUnauthorized)
 			return
 		}
 

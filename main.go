@@ -10,10 +10,12 @@ func main() {
 
 	router := http.NewServeMux()
 
-	router.HandleFunc("GET /public-key", publicKey)
+	router.HandleFunc("GET /pem", publicKey)
 
 	router.HandleFunc("POST /register", Register)
 	router.HandleFunc("POST /login", Login)
+
+	router.HandleFunc("GET /login", Login) // TODO: temp
 
 	http.ListenAndServe(":7102", router)
 }

@@ -1,9 +1,8 @@
 package main
 
 import (
-	"crypto/ecdsa"
-	"crypto/elliptic"
 	"crypto/rand"
+	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
@@ -15,10 +14,10 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var KeyFile = "key"
+var KeyFile = "private.key"
 
 var (
-	key *ecdsa.PrivateKey
+	key *rsa.PrivateKey
 )
 
 // LoadKey attempts to load a private key from KeyFile.
@@ -26,17 +25,25 @@ var (
 func LoadKey() {
 	// If the key doesn't exist, create it
 	if _, err := os.Stat(KeyFile); errors.Is(err, os.ErrNotExist) {
-		key, err = ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+		key, err = rsa.GenerateKey(rand.Reader, 4096)
 		if err != nil {
 			slog.Error("error generating key", "error", err)
 			os.Exit(1)
 		}
-		km, err := x509.MarshalECPrivateKey(key) // Save private key to disk
+
+		// Save key to disk
+		km := x509.MarshalPKCS1PrivateKey(key)
+		block := pem.Block{Bytes: km, Type: "RSA PRIVATE KEY"}
+		f, err := os.OpenFile(KeyFile, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 		if err != nil {
-			slog.Error("error marshalling key", "error", err)
+			slog.Error("error opening/creating file", "error", err)
 			os.Exit(1)
 		}
-		os.WriteFile(KeyFile, km, 0644)
+		f.Write(pem.EncodeToMemory(&block))
+		if err := f.Close(); err != nil {
+			slog.Error("error closing file", "error", err)
+			os.Exit(1)
+		}
 		slog.Info("generated new key")
 	} else {
 		km, err := os.ReadFile(KeyFile)
@@ -44,47 +51,56 @@ func LoadKey() {
 			slog.Error("error reading key", "error", err)
 			os.Exit(1)
 		}
-		key, err = x509.ParseECPrivateKey(km)
+		key, err = jwt.ParseRSAPrivateKeyFromPEM(km)
 		if err != nil {
 			slog.Error("error parsing key", "error", err)
 			os.Exit(1)
 		}
 		slog.Info("loaded private key")
 	}
-	slog.Debug("private key", "key", key)
 }
 
-// publicKey returns our public key in PKIX, ASN.1 DER form
+// publicKey returns our public key as PEM block
 func publicKey(w http.ResponseWriter, r *http.Request) {
-	key_marshalled, err := x509.MarshalPKIXPublicKey(&key.PublicKey)
-	if err != nil {
-		slog.Error("error marshalling public key", "error", err)
-		http.Error(w, "error marshalling public key", http.StatusInternalServerError)
-		return
-	}
-	// w.Write(key_marshalled)
-	block := pem.Block{Bytes: key_marshalled, Type: "ECDSA PUBLIC KEY"}
-	// slog.Info("public key", "orig", key_marshalled, "block", block)
+	key_marshalled := x509.MarshalPKCS1PublicKey(&key.PublicKey)
+	block := pem.Block{Bytes: key_marshalled, Type: "RSA PUBLIC KEY"}
 	pem.Encode(w, &block)
 }
 
-func init() {
-	LoadKey()
-}
-
 func CreateJWT(usr User) (string, error) {
-	t := jwt.NewWithClaims(jwt.SigningMethodES256,
+	t := jwt.NewWithClaims(jwt.SigningMethodRS256,
 		jwt.MapClaims{
 			"iss": "pye",
 			"uid": usr.Uuid,
 			"sub": usr.Email,
-			"iat": time.Now(),
-			"exp": time.Now().Add(time.Hour * 24 * 7),
+			"iat": time.Now().Unix(),
+			"exp": time.Now().Add(time.Hour * 24 * 7).Unix(),
 		})
 	s, err := t.SignedString(key)
 	if err != nil {
-		slog.Error("Error creating JWT", "error", err)
+		slog.Error("error creating JWT", "error", err)
 		return "", err
 	}
 	return s, nil
+}
+
+// VerifyToken receives a JWT and PEM-encoded public key,
+// then returns whether the token is valid
+func VerifyJWT(token string, publicKey []byte) bool {
+	_, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		key, err := jwt.ParseRSAPublicKeyFromPEM(publicKey)
+		if err != nil {
+			return nil, err
+		}
+		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+			return nil, err
+		}
+		return key, nil
+	})
+	slog.Info("Error check", "err", err)
+	return err == nil
+}
+
+func init() {
+	LoadKey()
 }
