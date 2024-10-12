@@ -6,13 +6,13 @@ import (
 )
 
 type User struct {
-	uuid  uuid.UUID
-	email string
-	hash  []byte // bcrypt hash of password
+	Uuid  uuid.UUID
+	Email string
+	Hash  []byte // bcrypt hash of password
 }
 
 func (u User) PasswordFits(password string) bool {
-	err := bcrypt.CompareHashAndPassword(u.hash, []byte(password))
+	err := bcrypt.CompareHashAndPassword(u.Hash, []byte(password))
 	return err == nil
 }
 
