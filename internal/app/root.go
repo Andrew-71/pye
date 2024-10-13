@@ -1,21 +1,21 @@
-package cmd
+package app
 
 import (
 	"fmt"
 	"os"
 
-	"git.a71.su/Andrew71/pye/auth"
-	"git.a71.su/Andrew71/pye/config"
-	"git.a71.su/Andrew71/pye/logging"
-	"git.a71.su/Andrew71/pye/storage"
-	"git.a71.su/Andrew71/pye/storage/sqlite"
+	"git.a71.su/Andrew71/pye/internal/auth"
+	"git.a71.su/Andrew71/pye/internal/config"
+	"git.a71.su/Andrew71/pye/internal/logging"
+	"git.a71.su/Andrew71/pye/internal/storage"
+	"git.a71.su/Andrew71/pye/internal/storage/sqlite"
 	"github.com/spf13/cobra"
 )
 
 var rootCmd = &cobra.Command{
 	Use:   "pye",
 	Short: "Pye is a simple JWT system",
-	Long:  `A bare-bones authentication system built by Andrew71 as an assignment`,
+	Long:  `A bare-bones authentication system with RS256`,
 }
 
 var (

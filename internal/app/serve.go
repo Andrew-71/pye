@@ -1,12 +1,12 @@
-package cmd
+package app
 
 import (
 	"log/slog"
 	"net/http"
 	"strconv"
 
-	"git.a71.su/Andrew71/pye/auth"
-	"git.a71.su/Andrew71/pye/config"
+	"git.a71.su/Andrew71/pye/internal/auth"
+	"git.a71.su/Andrew71/pye/internal/config"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/spf13/cobra"

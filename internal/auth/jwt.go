@@ -11,8 +11,8 @@ import (
 	"os"
 	"time"
 
-	"git.a71.su/Andrew71/pye/config"
-	"git.a71.su/Andrew71/pye/storage"
+	"git.a71.su/Andrew71/pye/internal/config"
+	"git.a71.su/Andrew71/pye/internal/models/user"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -66,7 +66,7 @@ func ServePublicKey(w http.ResponseWriter, r *http.Request) {
 }
 
 // Create creates a JSON Web Token that expires after a week
-func Create(user storage.User) (token string, err error) {
+func Create(user user.User) (token string, err error) {
 	t := jwt.NewWithClaims(jwt.SigningMethodRS256,
 		jwt.MapClaims{
 			"iss": "pye",

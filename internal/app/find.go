@@ -1,9 +1,10 @@
-package cmd
+package app
 
 import (
 	"fmt"
 
-	"git.a71.su/Andrew71/pye/storage"
+	"git.a71.su/Andrew71/pye/internal/models/user"
+	"git.a71.su/Andrew71/pye/internal/storage"
 	"github.com/spf13/cobra"
 )
 
@@ -20,7 +21,7 @@ var findUserCmd = &cobra.Command{
 }
 
 func findUser(cmd *cobra.Command, args []string) {
-	var user storage.User
+	var user user.User
 	var ok bool
 	if args[0] == "email" {
 		user, ok = storage.Data.ByEmail(args[1])

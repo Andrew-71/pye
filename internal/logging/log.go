@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"os"
 
-	"git.a71.su/Andrew71/pye/config"
+	"git.a71.su/Andrew71/pye/internal/config"
 	"github.com/go-chi/chi/middleware"
 )
 

@@ -1,13 +1,10 @@
-# Auth microservice
+# Pye Auth
 
 **Mission**: Science compels us to create a microservice!
 
-This is the repository for my **JWT auth microservice assignment**
+This is the repository for my **JWT authentication microservice**
 with(out) blazingly fast cloud-native web3 memory-safe blockchain reactive AI
 (insert a dozen more buzzwords of your choosing) technologies.
-
-This should be done by **October 17th 2024**. Or, at the very least,
-in a state that proves I am competent Go developer.
 
 ## Usage
 
@@ -33,6 +30,7 @@ Use "pye [command] --help" for more information about a command.
 
 ## Technologies used
 
-* **Storage** - [SQLite](https://github.com/mattn/go-sqlite3) and a PEM file
+* **Storage** - [SQLite](https://github.com/mattn/go-sqlite3) and a
+[PEM](https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail) file
 * **HTTP routing** - [Chi](https://go-chi.io), just for logging...
 * **CLI management** - [Cobra](https://cobra.dev/)

@@ -3,11 +3,13 @@ package sqlite
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"log/slog"
 	"os"
 
-	"git.a71.su/Andrew71/pye/storage"
-	_ "github.com/mattn/go-sqlite3"
+	"git.a71.su/Andrew71/pye/internal/models/user"
+	"git.a71.su/Andrew71/pye/internal/storage"
+	sqlite "github.com/mattn/go-sqlite3"
 )
 
 const create string = `
@@ -24,30 +26,36 @@ type SQLiteStorage struct {
 }
 
 func (s SQLiteStorage) Add(email, password string) error {
-	user, err := storage.New(email, password)
+	user, err := user.New(email, password)
 	if err != nil {
 		return err
 	}
 	_, err = s.db.Exec("insert into users (uuid, email, password) values ($1, $2, $3)",
 		user.Uuid.String(), user.Email, user.Hash)
 	if err != nil {
+		e, ok := err.(sqlite.Error)
+		if ok && errors.Is(e.ExtendedCode, sqlite.ErrConstraintUnique) {
+			// Return a standard error if the user already exists
+			slog.Info("can't add user because email already taken", "user", user)
+			return fmt.Errorf("%w (%s)", storage.ErrExist, user.Email)
+		}
 		slog.Error("error adding user to database", "error", err, "user", user)
 		return err
 	}
 	return nil
 }
 
-func (s SQLiteStorage) ById(uuid string) (storage.User, bool) {
+func (s SQLiteStorage) ById(uuid string) (user.User, bool) {
 	row := s.db.QueryRow("select * from users where uuid = $1", uuid)
-	user := storage.User{}
+	user := user.User{}
 	err := row.Scan(&user.Uuid, &user.Email, &user.Hash)
 
 	return user, err == nil
 }
 
-func (s SQLiteStorage) ByEmail(email string) (storage.User, bool) {
+func (s SQLiteStorage) ByEmail(email string) (user.User, bool) {
 	row := s.db.QueryRow("select * from users where email = $1", email)
-	user := storage.User{}
+	user := user.User{}
 	err := row.Scan(&user.Uuid, &user.Email, &user.Hash)
 
 	return user, err == nil

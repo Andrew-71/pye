@@ -1,11 +1,11 @@
-package cmd
+package app
 
 import (
 	"fmt"
 	"log/slog"
 	"os"
 
-	"git.a71.su/Andrew71/pye/auth"
+	"git.a71.su/Andrew71/pye/internal/auth"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/spf13/cobra"
 )

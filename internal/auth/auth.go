@@ -1,12 +1,13 @@
 package auth
 
 import (
+	"errors"
 	"log/slog"
 	"net/http"
 	"net/mail"
 	"strings"
 
-	"git.a71.su/Andrew71/pye/storage"
+	"git.a71.su/Andrew71/pye/internal/storage"
 )
 
 func validEmail(email string) bool {
@@ -25,7 +26,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	if ok {
 		email = strings.TrimSpace(email)
 		password = strings.TrimSpace(password)
-		if !(validEmail(email) && validPass(password) && !storage.Data.Taken(email)) {
+		if !(validEmail(email) && validPass(password)) {
 			slog.Debug("outcome",
 				"valid_email", validEmail(email),
 				"valid_pass", validPass(password),
@@ -35,12 +36,15 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		}
 		err := storage.Data.Add(email, password)
 		if err != nil {
-			slog.Error("error adding a new user", "error", err)
-			http.Error(w, "error adding a new user", http.StatusInternalServerError)
+			if errors.Is(err, storage.ErrExist) {
+				http.Error(w, "invalid auth credentials", http.StatusBadRequest)
+			} else {
+				http.Error(w, "error adding a new user", http.StatusInternalServerError)
+			}
 			return
 		}
 		w.WriteHeader(http.StatusCreated)
-		w.Write([]byte("User created"))
+		w.Write([]byte("user created"))
 		return
 	}
 
