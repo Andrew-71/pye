@@ -9,19 +9,29 @@ with(out) blazingly fast cloud-native web3 memory-safe blockchain reactive AI
 This should be done by **October 17th 2024**. Or, at the very least,
 in a state that proves I am competent Go developer.
 
-## Commands
+## Usage
 
-## JWT server
+```
+Usage:
+  pye [command]
 
-Serve a simple JWT auth system  
-**Usage**: `pye serve [--config] [--port] [--db]`
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  find        Find a user
+  help        Help about any command
+  serve       Start JWT service
+  verify      Verify a JWT token
 
-* `POST /register` - register a user with Basic Auth
-* `POST /login` - get a JWT token by Basic Auth
-* `GET /pem` - get PEM-encoded public RS256 key
-* Data and RS256 key persistently stored in an SQLite database and a PEM file
+Flags:
+  -c, --config string   config file (default "config.json")
+      --db string       database to use
+  -d, --debug           enable debug mode
+  -h, --help            help for pye
 
-## JWT verification
+Use "pye [command] --help" for more information about a command.
+```
 
-Verify a JWT with a public key from a PEM file  
-**Usage**: `pye verify <jwt> <pem_file>`
+## Technologies used
+
+* **Storage** - [SQLite](https://github.com/mattn/go-sqlite3) and a PEM file
+* **CLI management** - [Cobra](https://cobra.dev/)

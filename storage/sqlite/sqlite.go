@@ -61,7 +61,7 @@ func (s SQLiteStorage) EmailExists(email string) bool {
 func MustLoadSQLite(dataFile string) SQLiteStorage {
 	if _, err := os.Stat(dataFile); errors.Is(err, os.ErrNotExist) {
 		os.Create(dataFile)
-		slog.Info("created sqlite3 database file", "file", dataFile)
+		slog.Debug("created sqlite3 database file", "file", dataFile)
 	}
 	db, err := sql.Open("sqlite3", dataFile)
 	if err != nil {
@@ -72,13 +72,13 @@ func MustLoadSQLite(dataFile string) SQLiteStorage {
 	statement, err := db.Prepare(create)
 	if err != nil {
 		if err.Error() != "table \"users\" already exists" {
-			slog.Info("error initialising sqlite3 database table", "error", err)
+			slog.Error("error initialising sqlite3 database table", "error", err)
 			os.Exit(1)
 		}
 	} else {
 		statement.Exec()
 	}
 
-	slog.Info("loaded database", "file", dataFile)
+	slog.Debug("loaded database", "file", dataFile)
 	return SQLiteStorage{db}
 }

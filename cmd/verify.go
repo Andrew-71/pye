@@ -18,19 +18,19 @@ var (
 func init() {
 	verifyCmd.Flags().StringVarP(&verifyToken, "token", "t", "", "token to verify")
 	verifyCmd.MarkFlagRequired("token")
-	verifyCmd.Flags().StringVarP(&verifyFile, "file", "f", "", "file to use")
+	verifyCmd.Flags().StringVarP(&verifyFile, "file", "f", "", "PEM file to use")
 	rootCmd.AddCommand(verifyCmd)
 }
 
 var verifyCmd = &cobra.Command{
 	Use:   "verify",
 	Short: "Verify a JWT token",
-	Long: `Pass a JWT token and a path to PEM-encoded file with a public key
-		to verify whether it is legit.`,
+	Long: `Pass a JWT token (and optionally a path to a PEM-formatted file with the public key)
+		to verify whether it is valid.`,
 	Run: verifyFunc,
 }
 
-// TODO: Better name.
+// TODO: Needs a better name?
 func verifyFunc(cmd *cobra.Command, args []string) {
 	if verifyToken == "" {
 		fmt.Println("Empty token supplied!")
@@ -50,5 +50,10 @@ func verifyFunc(cmd *cobra.Command, args []string) {
 		}
 		t, err = auth.VerifyJWT(verifyToken, key)
 	}
-	slog.Info("result", "token", t, "error", err, "ok", err == nil)
+	slog.Debug("result", "token", t, "error", err, "ok", err == nil)
+	if err == nil {
+		fmt.Println("Token valid!")
+	} else {
+		fmt.Println("Token invalid!", err)
+	}
 }

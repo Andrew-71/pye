@@ -42,7 +42,7 @@ func MustLoadKey() {
 			slog.Error("error closing file", "error", err)
 			os.Exit(1)
 		}
-		slog.Info("generated new key", "file", config.Cfg.KeyFile)
+		slog.Debug("generated new key", "file", config.Cfg.KeyFile)
 	} else {
 		km, err := os.ReadFile(config.Cfg.KeyFile)
 		if err != nil {
@@ -54,12 +54,8 @@ func MustLoadKey() {
 			slog.Error("error parsing key", "error", err)
 			os.Exit(1)
 		}
-		slog.Info("loaded private key", "file", config.Cfg.KeyFile)
+		slog.Debug("loaded private key", "file", config.Cfg.KeyFile)
 	}
-}
-
-func init() {
-	MustLoadKey()
 }
 
 // PublicKey returns our public key as PEM block over http

@@ -38,18 +38,14 @@ func LoadConfig(filename string) error {
 		return err
 	}
 	Cfg = temp_config
-	slog.Info("Loaded config", "file", filename)
+	slog.Debug("Loaded config", "file", filename)
 	return nil
 }
 
-func MustLoadConfig() {
-	err := LoadConfig(DefaultLocation)
+func MustLoadConfig(filename string) {
+	err := LoadConfig(filename)
 	if err != nil {
 		slog.Error("error initially loading config", "error", err)
 		os.Exit(1)
 	}
-}
-
-func init() {
-	MustLoadConfig()
 }

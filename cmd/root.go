@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"log/slog"
 	"os"
 
+	"git.a71.su/Andrew71/pye/auth"
 	"git.a71.su/Andrew71/pye/config"
 	"git.a71.su/Andrew71/pye/logging"
 	"git.a71.su/Andrew71/pye/storage"
@@ -26,22 +26,19 @@ var (
 
 func initConfig() {
 	logging.LogInit(*debugMode)
-	if cfgFile != "" {
-		err := config.LoadConfig(cfgFile)
-		if err != nil {
-			slog.Error("error loading custom config", "error", err)
-		}
-	}
+	config.MustLoadConfig(cfgFile)
 	if cfgDb != "" {
 		config.Cfg.SQLiteFile = cfgDb
 	}
 
+	auth.MustLoadKey()
 	storage.Data = sqlite.MustLoadSQLite(config.Cfg.SQLiteFile)
+
 }
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "config.json", "config file")
+	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "config.json", "config file")
 	rootCmd.PersistentFlags().StringVar(&cfgDb, "db", "", "database to use")
 	debugMode = rootCmd.PersistentFlags().BoolP("debug", "d", false, "enable debug mode")
 }
