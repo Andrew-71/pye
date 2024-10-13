@@ -18,7 +18,7 @@ const create string = `
 	PRIMARY KEY("uuid")
   );`
 
-// SQLiteStorage is a storage.Storage implementation with SQLite3
+// SQLiteStorage is a Storage implementation with SQLite3
 type SQLiteStorage struct {
 	db *sql.DB
 }

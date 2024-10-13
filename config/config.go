@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+// Config stores app configuration
 type Config struct {
 	Port       int    `json:"port"`
 	KeyFile    string `json:"key-file"`
@@ -27,25 +28,27 @@ var (
 	Cfg             Config
 )
 
-func Load(filename string) error {
+// Load parses a JSON-formatted configuration file
+func load(filename string) (Config, error) {
 	data, err := os.ReadFile(filename)
 	if err != nil {
-		return err
+		return Config{}, err
 	}
-	temp_config := DefaultConfig
-	err = json.Unmarshal(data, &temp_config)
+	conf := DefaultConfig
+	err = json.Unmarshal(data, &conf)
 	if err != nil {
-		return err
+		return Config{}, err
 	}
-	Cfg = temp_config
-	slog.Debug("Loaded config", "file", filename, "config", Cfg)
-	return nil
+	slog.Debug("Loaded config", "file", filename, "config", conf)
+	return conf, nil
 }
 
+// MustLoad handles initial configuration loading
 func MustLoad(filename string) {
-	err := Load(filename)
+	conf, err := load(filename)
 	if err != nil {
 		slog.Error("error initially loading config", "error", err)
 		os.Exit(1)
 	}
+	Cfg = conf
 }

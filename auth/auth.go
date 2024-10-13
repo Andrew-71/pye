@@ -27,9 +27,9 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		password = strings.TrimSpace(password)
 		if !(validEmail(email) && validPass(password) && !storage.Data.Taken(email)) {
 			slog.Debug("outcome",
-				"email", validEmail(email),
-				"pass", validPass(password),
-				"taken", !storage.Data.Taken(email))
+				"valid_email", validEmail(email),
+				"valid_pass", validPass(password),
+				"taken_email", storage.Data.Taken(email))
 			http.Error(w, "invalid auth credentials", http.StatusBadRequest)
 			return
 		}

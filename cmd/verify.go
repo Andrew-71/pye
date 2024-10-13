@@ -30,7 +30,6 @@ var verifyCmd = &cobra.Command{
 	Run: verifyFunc,
 }
 
-// TODO: Needs a better name?
 func verifyFunc(cmd *cobra.Command, args []string) {
 	if verifyToken == "" {
 		fmt.Println("Empty token supplied!")

@@ -19,7 +19,6 @@ var findUserCmd = &cobra.Command{
 	Run:   findUser,
 }
 
-// TODO: Better name.
 func findUser(cmd *cobra.Command, args []string) {
 	var user storage.User
 	var ok bool
@@ -28,7 +27,7 @@ func findUser(cmd *cobra.Command, args []string) {
 	} else if args[0] == "uuid" {
 		user, ok = storage.Data.ById(args[1])
 	} else {
-		fmt.Println("expected email or uuid")
+		fmt.Println("Expected email or uuid")
 		return
 	}
 	if !ok {
