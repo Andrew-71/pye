@@ -18,6 +18,7 @@ const create string = `
 	PRIMARY KEY("uuid")
   );`
 
+// SQLiteStorage is a storage.Storage implementation with SQLite3
 type SQLiteStorage struct {
 	db *sql.DB
 }
@@ -64,14 +65,14 @@ func MustLoadSQLite(dataFile string) SQLiteStorage {
 	}
 	db, err := sql.Open("sqlite3", dataFile)
 	if err != nil {
-		slog.Error("error opening database", "error", err)
+		slog.Error("error opening sqlite3 database", "error", err)
 		os.Exit(1)
 	}
 
 	statement, err := db.Prepare(create)
 	if err != nil {
 		if err.Error() != "table \"users\" already exists" {
-			slog.Info("error initialising database table", "error", err)
+			slog.Info("error initialising sqlite3 database table", "error", err)
 			os.Exit(1)
 		}
 	} else {

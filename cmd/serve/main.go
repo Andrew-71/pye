@@ -28,5 +28,6 @@ func Serve() {
 	router.HandleFunc("GET /login", func(w http.ResponseWriter, r *http.Request) { auth.Login(w, r, data) })
 
 	slog.Info("🪐 pye started", "port", config.Cfg.Port)
+	slog.Debug("debug mode active")
 	http.ListenAndServe(":"+strconv.Itoa(config.Cfg.Port), router)
 }

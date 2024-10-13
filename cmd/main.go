@@ -9,16 +9,19 @@ import (
 	"git.a71.su/Andrew71/pye/cmd/serve"
 	"git.a71.su/Andrew71/pye/cmd/verify"
 	"git.a71.su/Andrew71/pye/config"
+	"git.a71.su/Andrew71/pye/logging"
 )
 
-func Run() {	
+func Run() {
 
 	serveCmd := flag.NewFlagSet("serve", flag.ExitOnError)
 	serveConfig := serveCmd.String("config", "", "override config file")
 	servePort := serveCmd.Int("port", 0, "override port")
 	serveDb := serveCmd.String("db", "", "override sqlite database")
+	serveDebug := serveCmd.Bool("debug", false, "debug logging")
 
 	verifyCmd := flag.NewFlagSet("verify", flag.ExitOnError)
+	verifyDebug := verifyCmd.Bool("debug", false, "debug logging")
 
 	if len(os.Args) < 2 {
 		fmt.Println("expected 'serve' or 'verify' subcommands")
@@ -28,6 +31,7 @@ func Run() {
 	switch os.Args[1] {
 	case "serve":
 		serveCmd.Parse(os.Args[2:])
+		logging.LogInit(*serveDebug)
 		if *serveConfig != "" {
 			err := config.LoadConfig(*serveConfig)
 			if err != nil {
@@ -43,8 +47,9 @@ func Run() {
 		serve.Serve()
 	case "verify":
 		verifyCmd.Parse(os.Args[2:])
+		logging.LogInit(*verifyDebug)
 		if len(os.Args) != 4 {
-			fmt.Println("Usage: <jwt> <pem file>")
+			fmt.Println("Usage: <jwt> <pem file>  [--debug]")
 		}
 		verify.Verify(os.Args[2], os.Args[3])
 	default:

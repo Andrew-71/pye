@@ -10,12 +10,16 @@ type Config struct {
 	Port       int    `json:"port"`
 	KeyFile    string `json:"key-file"`
 	SQLiteFile string `json:"sqlite-file"`
+	LogToFile  bool   `json:"log-to-file"`
+	LogFile    string `json:"log-file"`
 }
 
 var DefaultConfig = Config{
 	Port:       7102,
 	KeyFile:    "private.key",
 	SQLiteFile: "data.db",
+	LogToFile:  false,
+	LogFile:    "pye.log",
 }
 
 var (

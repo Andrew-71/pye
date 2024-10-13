@@ -11,15 +11,17 @@ in a state that proves I am competent Go developer.
 
 ## Commands
 
-## `pye serve [--config] [--port] [--db]`
+## JWT server
 
-Serve a simple JWT auth system
+Serve a simple JWT auth system  
+**Usage**: `pye serve [--config] [--port] [--db]`
 
 * `POST /register` - register a user with Basic Auth
 * `POST /login` - get a JWT token by Basic Auth
 * `GET /pem` - get PEM-encoded public RS256 key
 * Data and RS256 key persistently stored in an SQLite database and a PEM file
 
-## `pye verify <jwt> <pem file>`
+## JWT verification
 
-Verify a JWT with a public key from a PEM file
+Verify a JWT with a public key from a PEM file  
+**Usage**: `pye verify <jwt> <pem_file>`

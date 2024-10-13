@@ -5,4 +5,4 @@ serve:
 	go build && ./pye serve
 
 dev:
-	go build && ./pye serve --db dev-data.db
+	go build && ./pye serve --db dev-data.db  --debug
