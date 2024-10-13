@@ -34,4 +34,5 @@ Use "pye [command] --help" for more information about a command.
 ## Technologies used
 
 * **Storage** - [SQLite](https://github.com/mattn/go-sqlite3) and a PEM file
+* **HTTP routing** - [Chi](https://go-chi.io), just for logging...
 * **CLI management** - [Cobra](https://cobra.dev/)

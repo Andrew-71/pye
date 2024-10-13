@@ -38,7 +38,7 @@ func LoadConfig(filename string) error {
 		return err
 	}
 	Cfg = temp_config
-	slog.Debug("Loaded config", "file", filename)
+	slog.Debug("Loaded config", "file", filename, "config", Cfg)
 	return nil
 }
 

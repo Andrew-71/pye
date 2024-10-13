@@ -7,13 +7,15 @@ import (
 
 	"git.a71.su/Andrew71/pye/auth"
 	"git.a71.su/Andrew71/pye/config"
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"github.com/spf13/cobra"
 )
 
 var port int
 
 func init() {
-	serveCmd.Flags().IntVarP(&port, "port", "p", config.Cfg.Port, "port to use")
+	serveCmd.Flags().IntVarP(&port, "port", "p", 0, "port to use")
 	rootCmd.AddCommand(serveCmd)
 }
 
@@ -25,18 +27,22 @@ var serveCmd = &cobra.Command{
 }
 
 func serveAuth(cmd *cobra.Command, args []string) {
-	router := http.NewServeMux()
+	if port == 0 {
+		port = config.Cfg.Port
+	}
 
-	router.HandleFunc("GET /pem", auth.PublicKey)
+	r := chi.NewRouter()
+	r.Use(middleware.RealIP)
+	r.Use(middleware.Logger, middleware.CleanPath, middleware.StripSlashes)
 
-	router.HandleFunc("POST /register", auth.Register)
-	router.HandleFunc("POST /login", auth.Login)
+	r.Get("/pem", auth.PublicKey)
+	r.Post("/register", auth.Register)
+	r.Post("/login", auth.Login)
 
 	// Note: likely temporary, possibly to be replaced by a fake "frontend"
-	router.HandleFunc("GET /register", auth.Register)
-	router.HandleFunc("GET /login", auth.Login)
+	r.Get("/register", auth.Register)
+	r.Get("/login", auth.Login)
 
 	slog.Info("🪐 pye started", "port", port)
-	slog.Debug("debug mode active")
-	http.ListenAndServe(":"+strconv.Itoa(port), router)
+	http.ListenAndServe(":"+strconv.Itoa(port), r)
 }

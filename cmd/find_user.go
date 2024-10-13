@@ -7,11 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	findMethod string
-	findQuery  string
-)
-
 func init() {
 	rootCmd.AddCommand(findUserCmd)
 }

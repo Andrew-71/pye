@@ -33,7 +33,6 @@ func initConfig() {
 
 	auth.MustLoadKey()
 	storage.Data = sqlite.MustLoadSQLite(config.Cfg.SQLiteFile)
-
 }
 
 func init() {

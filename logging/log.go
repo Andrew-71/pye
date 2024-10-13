@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"git.a71.su/Andrew71/pye/config"
+	"github.com/go-chi/chi/middleware"
 )
 
 // LogInit makes slog output to both os.Stdout and a file if needed, and sets slog.LevelDebug if enabled.
@@ -30,5 +31,6 @@ func LogInit(debugMode bool) {
 		opts = &slog.HandlerOptions{Level: slog.LevelDebug}
 	}
 	slog.SetDefault(slog.New(slog.NewTextHandler(w, opts)))
-	log.SetFlags(log.LstdFlags | log.Lshortfile)
+	middleware.DefaultLogger = middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: log.Default(), NoColor: true})
+	slog.Debug("debug mode active")
 }
