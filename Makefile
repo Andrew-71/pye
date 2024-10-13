@@ -1,7 +1,7 @@
 build:
 	go build
 
-serve:
+run:
 	go build && ./pye serve
 
 dev:

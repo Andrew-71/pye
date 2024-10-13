@@ -101,3 +101,9 @@ func VerifyJWT(token string, publicKey []byte) (*jwt.Token, error) {
 	})
 	return t, err
 }
+
+func VerifyLocalJWT(token string) (*jwt.Token, error) {
+	key_marshalled := x509.MarshalPKCS1PublicKey(&key.PublicKey)
+	block := pem.Block{Bytes: key_marshalled, Type: "RSA PUBLIC KEY"}
+	return VerifyJWT(token, pem.EncodeToMemory(&block))
+}

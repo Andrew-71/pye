@@ -19,21 +19,21 @@ func validPass(pass string) bool {
 }
 
 // Register creates a new user with credentials provided through Basic Auth
-func Register(w http.ResponseWriter, r *http.Request, data storage.Storage) {
+func Register(w http.ResponseWriter, r *http.Request) {
 	email, password, ok := r.BasicAuth()
 
 	if ok {
 		email = strings.TrimSpace(email)
 		password = strings.TrimSpace(password)
-		if !(validEmail(email) && validPass(password) && !data.EmailExists(email)) {
+		if !(validEmail(email) && validPass(password) && !storage.Data.EmailExists(email)) {
 			slog.Debug("Outcome",
 				"email", validEmail(email),
 				"pass", validPass(password),
-				"taken", !data.EmailExists(email))
+				"taken", !storage.Data.EmailExists(email))
 			http.Error(w, "invalid auth credentials", http.StatusBadRequest)
 			return
 		}
-		err := data.AddUser(email, password)
+		err := storage.Data.AddUser(email, password)
 		if err != nil {
 			slog.Error("error adding a new user", "error", err)
 			http.Error(w, "error adding a new user", http.StatusInternalServerError)
@@ -50,13 +50,13 @@ func Register(w http.ResponseWriter, r *http.Request, data storage.Storage) {
 }
 
 // Login returns JWT for a registered user through Basic Auth
-func Login(w http.ResponseWriter, r *http.Request, data storage.Storage) {
+func Login(w http.ResponseWriter, r *http.Request) {
 	email, password, ok := r.BasicAuth()
 
 	if ok {
 		email = strings.TrimSpace(email)
 		password = strings.TrimSpace(password)
-		user, ok := data.ByEmail(email)
+		user, ok := storage.Data.ByEmail(email)
 		if !ok || !user.PasswordFits(password) {
 			w.Header().Set("WWW-Authenticate", `Basic realm="restricted", charset="UTF-8"`)
 			http.Error(w, "you did something wrong", http.StatusUnauthorized)
