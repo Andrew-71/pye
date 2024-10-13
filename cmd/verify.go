@@ -41,14 +41,14 @@ func verifyFunc(cmd *cobra.Command, args []string) {
 	var err error
 	if verifyFile == "" {
 		fmt.Println("No PEM file supplied, assuming local")
-		t, err = auth.VerifyLocalJWT(verifyToken)
+		t, err = auth.VerifyLocal(verifyToken)
 	} else {
 		key, err_k := os.ReadFile(verifyFile)
 		if err_k != nil {
 			slog.Error("error reading file", "error", err, "file", verifyFile)
 			return
 		}
-		t, err = auth.VerifyJWT(verifyToken, key)
+		t, err = auth.Verify(verifyToken, key)
 	}
 	slog.Debug("result", "token", t, "error", err, "ok", err == nil)
 	if err == nil {

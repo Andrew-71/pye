@@ -13,12 +13,14 @@ type User struct {
 	Hash  []byte // bcrypt hash of password
 }
 
-func (u User) PasswordFits(password string) bool {
+// Fits checks whether the password is correct
+func (u User) Fits(password string) bool {
 	err := bcrypt.CompareHashAndPassword(u.Hash, []byte(password))
 	return err == nil
 }
 
-func NewUser(email, password string) (User, error) {
+// New Creates a new User
+func New(email, password string) (User, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if err != nil {
 		slog.Error("error creating a new user", "error", err)

@@ -27,7 +27,7 @@ var (
 	Cfg             Config
 )
 
-func LoadConfig(filename string) error {
+func Load(filename string) error {
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		return err
@@ -42,8 +42,8 @@ func LoadConfig(filename string) error {
 	return nil
 }
 
-func MustLoadConfig(filename string) {
-	err := LoadConfig(filename)
+func MustLoad(filename string) {
+	err := Load(filename)
 	if err != nil {
 		slog.Error("error initially loading config", "error", err)
 		os.Exit(1)

@@ -25,15 +25,15 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	if ok {
 		email = strings.TrimSpace(email)
 		password = strings.TrimSpace(password)
-		if !(validEmail(email) && validPass(password) && !storage.Data.EmailExists(email)) {
-			slog.Debug("Outcome",
+		if !(validEmail(email) && validPass(password) && !storage.Data.Taken(email)) {
+			slog.Debug("outcome",
 				"email", validEmail(email),
 				"pass", validPass(password),
-				"taken", !storage.Data.EmailExists(email))
+				"taken", !storage.Data.Taken(email))
 			http.Error(w, "invalid auth credentials", http.StatusBadRequest)
 			return
 		}
-		err := storage.Data.AddUser(email, password)
+		err := storage.Data.Add(email, password)
 		if err != nil {
 			slog.Error("error adding a new user", "error", err)
 			http.Error(w, "error adding a new user", http.StatusInternalServerError)
@@ -57,18 +57,18 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		email = strings.TrimSpace(email)
 		password = strings.TrimSpace(password)
 		user, ok := storage.Data.ByEmail(email)
-		if !ok || !user.PasswordFits(password) {
+		if !ok || !user.Fits(password) {
 			w.Header().Set("WWW-Authenticate", `Basic realm="restricted", charset="UTF-8"`)
 			http.Error(w, "you did something wrong", http.StatusUnauthorized)
 			return
 		}
 
-		s, err := CreateJWT(user)
+		token, err := Create(user)
 		if err != nil {
 			http.Error(w, "error creating jwt", http.StatusInternalServerError)
 			return
 		}
-		w.Write([]byte(s))
+		w.Write([]byte(token))
 		return
 	}
 

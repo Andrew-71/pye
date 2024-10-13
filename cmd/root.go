@@ -25,14 +25,14 @@ var (
 )
 
 func initConfig() {
-	logging.LogInit(*debugMode)
-	config.MustLoadConfig(cfgFile)
+	logging.Load(*debugMode)
+	config.MustLoad(cfgFile)
 	if cfgDb != "" {
 		config.Cfg.SQLiteFile = cfgDb
 	}
 
 	auth.MustLoadKey()
-	storage.Data = sqlite.MustLoadSQLite(config.Cfg.SQLiteFile)
+	storage.Data = sqlite.MustLoad(config.Cfg.SQLiteFile)
 }
 
 func init() {

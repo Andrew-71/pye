@@ -35,7 +35,7 @@ func serveAuth(cmd *cobra.Command, args []string) {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger, middleware.CleanPath, middleware.StripSlashes)
 
-	r.Get("/pem", auth.PublicKey)
+	r.Get("/pem", auth.ServePublicKey)
 	r.Post("/register", auth.Register)
 	r.Post("/login", auth.Login)
 

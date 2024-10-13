@@ -23,8 +23,8 @@ type SQLiteStorage struct {
 	db *sql.DB
 }
 
-func (s SQLiteStorage) AddUser(email, password string) error {
-	user, err := storage.NewUser(email, password)
+func (s SQLiteStorage) Add(email, password string) error {
+	user, err := storage.New(email, password)
 	if err != nil {
 		return err
 	}
@@ -53,12 +53,12 @@ func (s SQLiteStorage) ByEmail(email string) (storage.User, bool) {
 	return user, err == nil
 }
 
-func (s SQLiteStorage) EmailExists(email string) bool {
+func (s SQLiteStorage) Taken(email string) bool {
 	_, ok := s.ByEmail(email)
 	return ok
 }
 
-func MustLoadSQLite(dataFile string) SQLiteStorage {
+func MustLoad(dataFile string) SQLiteStorage {
 	if _, err := os.Stat(dataFile); errors.Is(err, os.ErrNotExist) {
 		os.Create(dataFile)
 		slog.Debug("created sqlite3 database file", "file", dataFile)

@@ -10,8 +10,8 @@ import (
 	"github.com/go-chi/chi/middleware"
 )
 
-// LogInit makes slog output to both os.Stdout and a file if needed, and sets slog.LevelDebug if enabled.
-func LogInit(debugMode bool) {
+// Load makes slog output to both os.Stdout and a file if needed, and sets slog.LevelDebug if enabled.
+func Load(debugMode bool) {
 	var w io.Writer
 	if config.Cfg.LogToFile {
 		f, err := os.OpenFile(config.Cfg.LogFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)

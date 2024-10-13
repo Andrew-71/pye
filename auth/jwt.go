@@ -18,7 +18,7 @@ import (
 
 var key *rsa.PrivateKey
 
-// LoadKey attempts to load a private key from KeyFile.
+// LoadKey attempts to load a private RS256 key from file.
 // If the file does not exist, it generates a new key (and saves it)
 func MustLoadKey() {
 	// If the key doesn't exist, create it
@@ -58,14 +58,15 @@ func MustLoadKey() {
 	}
 }
 
-// PublicKey returns our public key as PEM block over http
-func PublicKey(w http.ResponseWriter, r *http.Request) {
+// ServePublicKey returns our public key as PEM block over HTTP
+func ServePublicKey(w http.ResponseWriter, r *http.Request) {
 	key_marshalled := x509.MarshalPKCS1PublicKey(&key.PublicKey)
 	block := pem.Block{Bytes: key_marshalled, Type: "RSA PUBLIC KEY"}
 	pem.Encode(w, &block)
 }
 
-func CreateJWT(user storage.User) (string, error) {
+// Create creates a JSON Web Token that expires after a week
+func Create(user storage.User) (token string, err error) {
 	t := jwt.NewWithClaims(jwt.SigningMethodRS256,
 		jwt.MapClaims{
 			"iss": "pye",
@@ -74,17 +75,17 @@ func CreateJWT(user storage.User) (string, error) {
 			"iat": time.Now().Unix(),
 			"exp": time.Now().Add(time.Hour * 24 * 7).Unix(),
 		})
-	s, err := t.SignedString(key)
+	token, err = t.SignedString(key)
 	if err != nil {
 		slog.Error("error creating JWT", "error", err)
 		return "", err
 	}
-	return s, nil
+	return
 }
 
-// VerifyToken receives a JWT and PEM-encoded public key,
+// Verify receives a JWT and PEM-encoded public key,
 // then returns whether the token is valid
-func VerifyJWT(token string, publicKey []byte) (*jwt.Token, error) {
+func Verify(token string, publicKey []byte) (*jwt.Token, error) {
 	t, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		key, err := jwt.ParseRSAPublicKeyFromPEM(publicKey)
 		if err != nil {
@@ -98,8 +99,9 @@ func VerifyJWT(token string, publicKey []byte) (*jwt.Token, error) {
 	return t, err
 }
 
-func VerifyLocalJWT(token string) (*jwt.Token, error) {
+// VerifyLocal calls Verify with public key set to current local one
+func VerifyLocal(token string) (*jwt.Token, error) {
 	key_marshalled := x509.MarshalPKCS1PublicKey(&key.PublicKey)
 	block := pem.Block{Bytes: key_marshalled, Type: "RSA PUBLIC KEY"}
-	return VerifyJWT(token, pem.EncodeToMemory(&block))
+	return Verify(token, pem.EncodeToMemory(&block))
 }
