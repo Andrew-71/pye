@@ -16,9 +16,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var (
-	key     *rsa.PrivateKey
-)
+var key *rsa.PrivateKey
 
 // LoadKey attempts to load a private key from KeyFile.
 // If the file does not exist, it generates a new key (and saves it)

@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"os"
 
+	"git.a71.su/Andrew71/pye/cmd/find_user"
 	"git.a71.su/Andrew71/pye/cmd/serve"
 	"git.a71.su/Andrew71/pye/cmd/verify"
 	"git.a71.su/Andrew71/pye/config"
@@ -48,12 +49,20 @@ func Run() {
 	case "verify":
 		verifyCmd.Parse(os.Args[2:])
 		logging.LogInit(*verifyDebug)
-		if len(os.Args) != 4 {
+		if len(os.Args) < 4 {
 			fmt.Println("Usage: <jwt> <pem file>  [--debug]")
+		} else {
+			verify.Verify(os.Args[2], os.Args[3])
 		}
-		verify.Verify(os.Args[2], os.Args[3])
+	case "user":
+		if len(os.Args) !=4 {
+			fmt.Println("Usage: <uuid/email> <query>")
+		} else {
+			find_user.FindUser(os.Args[2], os.Args[3])
+		}
+		
 	default:
-		fmt.Println("expected 'serve' or 'verify' subcommands")
+		fmt.Println("expected 'serve'/'verify'/'user' subcommands")
 		os.Exit(0)
 	}
 }

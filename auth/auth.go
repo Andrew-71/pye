@@ -18,6 +18,7 @@ func validPass(pass string) bool {
 	return len(pass) >= 8
 }
 
+// Register creates a new user with credentials provided through Basic Auth
 func Register(w http.ResponseWriter, r *http.Request, data storage.Storage) {
 	email, password, ok := r.BasicAuth()
 
@@ -48,6 +49,7 @@ func Register(w http.ResponseWriter, r *http.Request, data storage.Storage) {
 	http.Error(w, "This API requires authorization", http.StatusUnauthorized)
 }
 
+// Login returns JWT for a registered user through Basic Auth
 func Login(w http.ResponseWriter, r *http.Request, data storage.Storage) {
 	email, password, ok := r.BasicAuth()
 

@@ -1,5 +1,7 @@
 {
     "port": 7102,
     "key-file": "private.key",
-    "sqlite-file": "data.db"
+    "sqlite-file": "data.db",
+    "log-to-file": false,
+    "log-file": "pye.log"
 }
