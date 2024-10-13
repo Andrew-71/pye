@@ -15,7 +15,7 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "pye",
 	Short: "Pye is a simple JWT system",
-	Long:  `A bare-bones authentication system with RS256`,
+	Long:  `An HTTP JSON Web Token authentication system`,
 }
 
 var (

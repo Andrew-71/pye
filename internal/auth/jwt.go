@@ -66,7 +66,7 @@ func ServePublicKey(w http.ResponseWriter, r *http.Request) {
 }
 
 // Create creates a JSON Web Token that expires after a week
-func Create(user user.User) (token string, err error) {
+func CreateToken(user user.User) (token string, err error) {
 	t := jwt.NewWithClaims(jwt.SigningMethodRS256,
 		jwt.MapClaims{
 			"iss": "pye",
@@ -85,7 +85,7 @@ func Create(user user.User) (token string, err error) {
 
 // Verify receives a JWT and PEM-encoded public key,
 // then returns whether the token is valid
-func Verify(token string, publicKey []byte) (*jwt.Token, error) {
+func VerifyToken(token string, publicKey []byte) (*jwt.Token, error) {
 	t, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		key, err := jwt.ParseRSAPublicKeyFromPEM(publicKey)
 		if err != nil {
@@ -100,8 +100,8 @@ func Verify(token string, publicKey []byte) (*jwt.Token, error) {
 }
 
 // VerifyLocal calls Verify with public key set to current local one
-func VerifyLocal(token string) (*jwt.Token, error) {
+func VerifyLocalToken(token string) (*jwt.Token, error) {
 	key_marshalled := x509.MarshalPKCS1PublicKey(&key.PublicKey)
 	block := pem.Block{Bytes: key_marshalled, Type: "RSA PUBLIC KEY"}
-	return Verify(token, pem.EncodeToMemory(&block))
+	return VerifyToken(token, pem.EncodeToMemory(&block))
 }

@@ -15,7 +15,7 @@ func validEmail(email string) bool {
 	return err == nil
 }
 func validPass(pass string) bool {
-	// TODO: Obviously, we *might* want something more sophisticated here
+	// Note: Obviously, we *might* want something more sophisticated here
 	return len(pass) >= 8
 }
 
@@ -67,7 +67,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		token, err := Create(user)
+		token, err := CreateToken(user)
 		if err != nil {
 			http.Error(w, "error creating jwt", http.StatusInternalServerError)
 			return

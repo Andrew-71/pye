@@ -27,10 +27,10 @@ var verifyCmd = &cobra.Command{
 	Short: "Verify a JWT token",
 	Long: `Pass a JWT token (and optionally a path to a PEM-formatted file with the public key)
 		to verify whether it is valid.`,
-	Run: verifyFunc,
+	Run: verify,
 }
 
-func verifyFunc(cmd *cobra.Command, args []string) {
+func verify(cmd *cobra.Command, args []string) {
 	if verifyToken == "" {
 		fmt.Println("Empty token supplied!")
 		return
@@ -40,14 +40,14 @@ func verifyFunc(cmd *cobra.Command, args []string) {
 	var err error
 	if verifyFile == "" {
 		fmt.Println("No PEM file supplied, assuming local")
-		t, err = auth.VerifyLocal(verifyToken)
+		t, err = auth.VerifyLocalToken(verifyToken)
 	} else {
 		key, err_k := os.ReadFile(verifyFile)
 		if err_k != nil {
 			slog.Error("error reading file", "error", err, "file", verifyFile)
 			return
 		}
-		t, err = auth.Verify(verifyToken, key)
+		t, err = auth.VerifyToken(verifyToken, key)
 	}
 	slog.Debug("result", "token", t, "error", err, "ok", err == nil)
 	if err == nil {

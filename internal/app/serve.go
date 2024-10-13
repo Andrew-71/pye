@@ -23,10 +23,10 @@ var serveCmd = &cobra.Command{
 	Use:   "serve",
 	Short: "Start JWT service",
 	Long:  `Start a simple authentication service`,
-	Run:   serveAuth,
+	Run:   serve,
 }
 
-func serveAuth(cmd *cobra.Command, args []string) {
+func serve(cmd *cobra.Command, args []string) {
 	if port == 0 {
 		port = config.Cfg.Port
 	}
